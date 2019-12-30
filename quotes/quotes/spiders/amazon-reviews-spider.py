@@ -27,16 +27,17 @@ class AmazonReviewsSpider(scrapy.Spider):
             yield {
                 'id': review.xpath('@id').extract_first(),
                 'stars': self.extract_stars(review),
-                'title': review.css('a.review-title::text').extract_first(),
-                'author_profile_url': review.css('a[data-hook="review-author"]::attr(href)').extract_first(),
-                'author_name': review.css('a[data-hook="review-author"]::text').extract_first(),
-                'badges': review.css('span.c7y-badge-text::text').extract(),
+                'title': review.css('a.review-title span::text').extract_first(),
+                'author_profile_url': review.css('div:nth-child(1) a').extract_first(),
+                'author_name': review.css('div:nth-child(1) a div.a-profile-content span::text').extract_first(),
+                'badges': review.css('div.a-row.a-spacing-mini.review-data.review-format-strip span::text').extract_first(),
+                'badges_early': review.css('span.a-size-mini.a-color-state.aok-nowrap.a-text-bold::text').extract_first(),
                 'review_date': review.css('span.review-date::text').extract_first(),
-                'review_text': review.css('span.review-body::text').extract_first(),
+                'review_text': review.css('div.a-row.a-spacing-small.review-data span span::text').extract_first(),
                 'comments_count': review.css('span.review-comment-total::text').extract_first(),
                 'review_helpful_votes': self.extract_review_votes(review)
             }
-
+            
     def extract_review_votes(self, review):
         votes = review.css('span.review-votes::text').extract_first()
         if not votes:
